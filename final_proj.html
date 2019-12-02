@@ -8,7 +8,20 @@
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
 
+
+
+
+
+
+
+
 <style>
+
+
+
+  select { position: absolute; left: 50px; top: 50px; }
+  p { position: absolute; left: 280px; top: 32px; }
+
 
 div.tooltip{
   position: absolute;
@@ -30,13 +43,57 @@ div.tooltip{
 }
 </style>
 
+
+<body>
+
+  <select name='org_id'>
+    <option value="volvo">Volvo</option>
+    <option value="saab">Saab</option>
+    <option value="mercedes">Mercedes</option>
+    <option value="audi">Audi</option>
+  </select>
+
 <!-- Create a div where the graph will take place -->
 <div id="my_dataviz"></div>
 
-<script>
-// set the dimensions and margins of the graph
 
-// -1- Create a tooltip div that is hidden by default:
+
+</body>
+
+<script>
+
+
+
+var s = document.getElementsByName('org_id')[0];
+
+s.addEventListener("change", changeOrg);
+
+function changeOrg(){
+  var value = s.options[s.selectedIndex].value;
+  console.log(value);
+}
+
+//on page load
+changeOrg();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var tooltip = d3.select("#my_dataviz")
   .append("div")
     .style("opacity", 0)
@@ -82,9 +139,9 @@ var noHighlight = function(d){
 }
 
 
-var margin = {top: 100, right: 200, bottom: 300, left: 500},
-    width = 1000 - margin.left - margin.right,
-    height = 900 - margin.top - margin.bottom;
+var margin = {top: 200, right: 200, bottom: 300, left: 300},
+    width = 1500 - margin.left - margin.right,
+    height = 1100 - margin.top - margin.bottom;
 // append the svg object to the body of the page
 var svg = d3.select("#my_dataviz")
   .append("svg")
