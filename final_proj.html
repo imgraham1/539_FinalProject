@@ -19,10 +19,6 @@
 
 
 
-  select { position: absolute; left: 50px; top: 50px; }
-  p { position: absolute; left: 280px; top: 32px; }
-
-
 div.tooltip{
   position: absolute;
   text-align: center;
@@ -46,11 +42,13 @@ div.tooltip{
 
 <body>
 
-  <select name='org_id'>
-    <option value="volvo">Volvo</option>
-    <option value="saab">Saab</option>
-    <option value="mercedes">Mercedes</option>
-    <option value="audi">Audi</option>
+  <select name='x-axis'>
+    <option value="Negative_affect">Negative_affect</option>
+    <option value="Social_support">Social_support</option>
+    <option value="Freedom">Freedom</option>
+    <option value="Corruption">Corruption</option>
+    <option value="Log_gdp_per_capita">Log_of_GDP_per_capita</option>
+    <option value="Healthy_life_expectancy">Healthy_life_expectancy</option>
   </select>
 
 <!-- Create a div where the graph will take place -->
@@ -64,34 +62,64 @@ div.tooltip{
 
 
 
-var s = document.getElementsByName('org_id')[0];
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// var test = ("d.Corruption")
+
+var s = document.getElementsByName('x-axis')[0];
 s.addEventListener("change", changeOrg);
 
+console.log(s.options[s.selectedIndex].value)
+
 function changeOrg(){
-  var value = s.options[s.selectedIndex].value;
-  console.log(value);
+  value = s.options[s.selectedIndex].value;
+  // console.log(test)
 }
 
 //on page load
 changeOrg();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+console.log(value)
 
 
 var tooltip = d3.select("#my_dataviz")
@@ -152,7 +180,7 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 //Read the data
 d3.csv("https://raw.githubusercontent.com/imgraham1/539_FinalProject/master/world-happiness-report-2019.csv", function(data) {
-		console.log(data);
+		// console.log(data);
   // Add X axis
   var x = d3.scaleLinear()
     .domain([0, 157])
@@ -174,7 +202,7 @@ d3.csv("https://raw.githubusercontent.com/imgraham1/539_FinalProject/master/worl
   var myColor = d3.scaleOrdinal()
     .domain([0, 157])
     .range(d3.schemeSet2);
-
+console.log(value)
 
     // Add dots
     svg.append('g')
@@ -183,7 +211,7 @@ d3.csv("https://raw.githubusercontent.com/imgraham1/539_FinalProject/master/worl
       .enter()
       .append("circle")
         .attr("class", "bubbles")
-        .attr("cx", function (d) { return x(d.Log_of_GDP_per_capita); } )
+        .attr('cx', function (d) { return x(d.Negative_affect); })
         .attr("cy", function (d) { return y(d.Healthy_life_expectancy); } )
         .attr("r", function (d) { return z(d.Corruption); } )
         .style("fill", function (d) { return myColor(d.Generosity); } )
