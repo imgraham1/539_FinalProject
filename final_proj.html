@@ -100,7 +100,7 @@ function drawGraph(xText, yText) {
 		yAxis = d3.svg.axis().scale(yScale).orient("left");
 
 	// setup fill color
-	var cValue = function(d) { return d.Country;},
+	var cValue = function(d) { return d.bins;},
 		color = d3.scale.category10();
 
 	// add the graph canvas to the body of the webpage
@@ -119,6 +119,8 @@ function drawGraph(xText, yText) {
     .domain([0, 750])
     .range([ 0, 100]);
 
+
+
 	// load data
 	// d3.csv("passing-stats-2014.csv", function(error, data) {
 d3.csv("https://raw.githubusercontent.com/imgraham1/539_FinalProject/master/world-happiness-report-2019.csv", function(error, data) {
@@ -129,6 +131,7 @@ d3.csv("https://raw.githubusercontent.com/imgraham1/539_FinalProject/master/worl
 	//console.log (d.School);
 	//console.dir (d);
 	  });
+
 
 	  // don't want dots overlapping axis, so add in buffer to data domain
 	  xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
