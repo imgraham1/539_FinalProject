@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<style>
+body {
+  font: 11px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+g.y.axis{font-size:
+20px}
+
+g.x.axis{font-size:
+20px}
+
+.dot {
+  stroke: white;
+}
+.dot:hover {
+  stroke: black;
+}
+
+.tooltip {
+  position: absolute;
+  width: 90px;
+  height: 50px;
+  pointer-events: none;
+  background-color: #3d3d3d;
+  color: white;
+  text-align: center;
+  border-radius:20px;
+  padding-top: 15px
+
+}
+h1 {
+		text-align: center;
+		}
+
+		h2 {
+		text-align: left;
+		}
+</style>
+<body>
+
+<p><span><label for="y-axis">Select y-axis</label></span>
+
+<select id='y-value'>
+  <option value="Negative_affect">Negative_affect</option>
+  <option value="Social_support">Social_support</option>
+  <option value="Freedom">Freedom</option>
+  <option value="Corruption">Corruption</option>
+  <option value="Generosity">Generosity</option>
+  <option value="Log_of_GDP_per_capita">Log_of_GDP_per_capita</option>
+  <option value="Healthy_life_expectancy">Healthy_life_expectancy</option>
+</select>
+
+<p><span><label for="x-axis">Select x-axis</label></span>
+
+<select id='x-value'>
+  <option value="Corruption">Corruption</option>
+  <option value="Negative_affect">Negative_affect</option>
+  <option value="Social_support">Social_support</option>
+  <option value="Freedom">Freedom</option>
+  <option value="Generosity">Generosity</option>
+  <option value="Log_of_GDP_per_capita">Log_of_GDP_per_capita</option>
+  <option value="Healthy_life_expectancy">Healthy_life_expectancy</option>
+</select>
+
+<button onclick="setGraph()">submit</button>
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+
+<script>
+
+function drawGraph(xText, yText) {
+	$('svg').remove();
+	var margin = {top: 100, right: 40, bottom: 80, left: 120},
+		width = 850 - margin.left - margin.right,
+		height = 850 - margin.top - margin.bottom;
+
+	// setup x
+	var xValue = function(d) { return d[xText];}, // data -> value
+		xScale = d3.scale.linear().range([0, width]), // value -> display
+		xMap = function(d) { return xScale(xValue(d));}, // data -> display
+		xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+
+	// setup y
+	var yValue = function(d) { return d[yText];}, // data -> value
+		yScale = d3.scale.linear().range([height, 0]), // value -> display
+		yMap = function(d) { return yScale(yValue(d));}, // data -> display
+		yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+	// setup fill color
+	var cValue = function(d) { return d.bins;},
+		color = d3.scale.category10();
+
+	// add the graph canvas to the body of the webpage
+	var svg = d3.select("body").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	  .append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	// add the tooltip area to the webpage
+	var tooltip = d3.select("body").append("div")
+		.attr("class", "tooltip")
+		.style("opacity", 1);
+
+  var z = d3.scale.linear()
+    .domain([0, 750])
+    .range([ 0, 100]);
+
+
+
+	// load data
+	// d3.csv("passing-stats-2014.csv", function(error, data) {
+d3.csv("https://raw.githubusercontent.com/imgraham1/539_FinalProject/master/world-happiness-report-2019.csv", function(error, data) {
+	  // change string (from CSV) into number format
+	  data.forEach(function(d) {
+		d[yText] = +d[yText];
+		d[xText] = +d[xText];
+	//console.log (d.School);
+	//console.dir (d);
+	  });
+
+
+	  // don't want dots overlapping axis, so add in buffer to data domain
+	  xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
+	  yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+
+	  // x-axis
+	  svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis)
+		.append("text")
+		  .attr("class", "label")
+		  .attr("x", width)
+		  .attr("y", 75)
+      .style("size", 25)
+		  .style("text-anchor", "end")
+		  .text(xText);
+
+	  // y-axis
+	  svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis)
+		.append("text")
+		  .attr("class", "label")
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", 6)
+		  .attr("dy", "-5em")
+		  .style("text-anchor", "end")
+		  .text(yText);
+
+	  // draw dots
+	  svg.selectAll(".dot")
+		  .data(data)
+		.enter().append("circle")
+		  .attr("class", "dot")
+		  .attr("r", 3.5)
+		  .attr("cx", xMap)
+		  .attr("cy", yMap)
+      .attr("r", function (d) { return z(d.Ladder); } )
+		  .style("fill", function(d) { return color(cValue(d));})
+
+
+		  .on("mouseover", function(d) {
+			  tooltip.transition()
+				   .duration(200)
+				   .style("opacity", .85);
+			  tooltip.html(d.Country + "<br/>(" + xValue(d)
+				+ ", " + yValue(d) + ")")
+				   .style("left", (d3.event.pageX + 10) + "px")
+				   .style("top", (d3.event.pageY - 28) + "px");
+		  })
+		  .on("mouseout", function(d) {
+			  tooltip.transition()
+				   .duration(500)
+				   .style("opacity", 0);
+		  });
+
+
+	});
+}
+
+drawGraph('Corruption', 'Negative_affect');
+
+function setGraph() {
+	drawGraph($('#x-value').val(), $('#y-value').val());
+}
+</script>
+</body>
+</html>
